@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ELECTRIX Course App</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6f00;
+            --primary-gradient: linear-gradient(135deg, #ff6f00, #ff8f00);
+            --video-red: #ff0000;
+            --background-color: #f4f6f9;
+            --card-background: #ffffff;
+            --text-color: #2d3436;
+            --text-muted: #636e72;
+            --header-bg: #192a56;
+            --border-radius: 16px;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.12);
+            --input-bg: #f0f2f5;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+            /* Global Protection: Disable Selection */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* App Container Styling */
+        .app-container, .auth-container {
+            max-width: 500px;
+            margin: auto;
+            background-color: var(--background-color);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        /* --- Auth & Main CSS (Unchanged) --- */
+        .auth-container {
+            display: flex; flex-direction: column; justify-content: center; padding: 30px; background: white; box-sizing: border-box;
+        }
+        .auth-form { display: none; flex-direction: column; gap: 20px; animation: fadeIn 0.5s ease; }
+        .auth-form.active { display: flex; }
+        .auth-container h2 { text-align: center; color: var(--header-bg); font-size: 2rem; margin-bottom: 10px; font-weight: 800; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 15px; width: 20px; height: 20px; fill: var(--text-muted); z-index: 10; transition: fill 0.3s; }
+        .auth-container input { width: 100%; padding: 15px 15px 15px 45px; border: 2px solid transparent; border-radius: 12px; font-size: 1rem; background-color: var(--input-bg); transition: all 0.3s; outline: none; box-sizing: border-box; color: var(--text-color); font-family: inherit; }
+        .auth-container input:focus { border-color: var(--primary-color); background-color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .auth-container input:focus + .input-icon, .input-wrapper:focus-within .input-icon { fill: var(--primary-color); }
+        .auth-container button { padding: 16px; border: none; border-radius: 12px; background: var(--primary-gradient); color: white; font-size: 1.1em; cursor: pointer; font-weight: 600; box-shadow: 0 5px 15px rgba(255, 111, 0, 0.3); transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; }
+        .auth-container button:active { transform: scale(0.98); }
+        .toggle-form { text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 0.95em; }
+        .toggle-form span { color: var(--primary-color); cursor: pointer; font-weight: bold; text-decoration: underline; margin-left: 5px; }
+
+        .main-header { background: var(--header-bg); color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 5px 15px rgba(25, 42, 86, 0.2); margin-bottom: 10px; position: sticky; top: 0; z-index: 100; }
+        .header-title { flex-grow: 1; text-align: center; font-size: 1.6em; font-weight: 800; letter-spacing: 3px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .header-icon-button { background: rgba(255,255,255,0.15); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); transition: background 0.2s; }
+        .header-icon-button:active { background: rgba(255,255,255,0.3); }
+        .header-icon-button svg { width: 20px; height: 20px; fill: white; }
+
+        .course-nav { display: flex; justify-content: center; align-items: center; padding: 10px 0; background: transparent; margin-top: 5px; gap: 10px; }
+        .nav-tab { padding: 8px 25px; cursor: pointer; border: none; border-radius: 30px; font-weight: 600; color: var(--text-muted); background: white; box-shadow: var(--shadow-light); transition: all 0.3s; }
+        .nav-tab.active { color: white; background: var(--primary-gradient); box-shadow: var(--shadow-light); transform: translateY(-2px); }
+        
+        /* Chat Button Style */
+        .chat-btn { background: #0984e3; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-light); transition: transform 0.2s; }
+        .chat-btn:active { transform: scale(0.95); }
+        .chat-btn svg { width: 22px; height: 22px; fill: white; }
+
+        /* Chat Modal Styling */
+        .chat-modal { display: none; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 80vh; background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); z-index: 2000; flex-direction: column; animation: slideUp 0.3s ease; }
+        .chat-modal.active { display: flex; }
+        .chat-header { background: #0984e3; color: white; padding: 15px; border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header h3 { margin: 0; font-size: 1.1em; }
+        .chat-close-btn { background: none; border: none; color: white; font-size: 1.5em; cursor: pointer; }
+        .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f0f2f5; }
+        .message-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 0.95em; position: relative; word-wrap: break-word; }
+        .message-bubble.others { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .message-bubble.mine { background: #0984e3; color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .message-sender { font-size: 0.7em; color: #636e72; margin-bottom: 2px; display: block; }
+        .message-bubble.mine .message-sender { color: rgba(255,255,255,0.8); text-align: right; }
+        .chat-input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px; }
+        .chat-input-area input { flex-grow: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+        .chat-input-area button { background: #0984e3; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: auto; margin: 0; box-shadow: none; }
+        
+        @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+
+        .course-grid { display: none; padding: 20px; gap: 15px; grid-template-columns: repeat(2, 1fr); animation: fadeIn 0.5s ease; }
+        .course-grid.active { display: grid; }
+        .course-card { background-color: var(--card-background); border-radius: var(--border-radius); box-shadow: var(--shadow-light); overflow: hidden; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; }
+        .course-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .course-banner { height: 120px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; }
+        .course-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.25); }
+        .course-icon { font-size: 3em; color: white; position: relative; text-align: center; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
+        .course-icon.is-text { font-size: 1.5em; font-weight: bold; line-height: 1.3; padding: 0 10px; }
+        .course-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-color); line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .course-action-btn { padding: 10px; width: 100%; border: none; border-radius: 10px; background-color: var(--header-bg); color: white; font-weight: 600; cursor: pointer; font-size: 0.85em; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.2s; }
+        .course-action-btn.enrolled { background-color: #44bd32; }
+
+        .page { display: none; } .page.active { display: block; }
+        .profile-header { padding: 15px 20px; display: flex; align-items: center; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        #profilePage { background-color: #f8f9fa; }
+        #profilePage .profile-form-container { padding: 20px; }
+        .profile-card-modern { background: white; border-radius: 20px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; border: 1px solid #f1f1f1; }
+        .profile-avatar-circle { width: 80px; height: 80px; background: var(--primary-gradient); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: bold; box-shadow: 0 5px 15px rgba(255, 111, 0, 0.3); }
+        #profilePage .form-group { margin-bottom: 20px; text-align: left; }
+        #profilePage label { display: block; margin-bottom: 8px; color: var(--header-bg); font-weight: 700; font-size: 0.95em; }
+        #profilePage input { width: 100%; padding: 14px 15px; border: 2px solid #eee; border-radius: 12px; font-family: inherit; background: #fcfcfc; box-sizing: border-box; transition: 0.3s; }
+        #profilePage input:focus { border-color: var(--primary-color); background: white; }
+        #profilePage input[readonly] { background-color: #eaeff2; color: #7f8c8d; border-color: transparent; cursor: default; }
+        #profilePage .save-button { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--header-bg); color: white; font-size: 1.1em; cursor: pointer; font-weight: bold; box-shadow: 0 5px 15px rgba(25, 42, 86, 0.2); transition: transform 0.2s; }
+        #profilePage .save-button:active { transform: scale(0.98); }
+
+        .chapter-list-container { padding: 20px; }
+        .chapter-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--primary-color); transition: transform 0.2s, box-shadow 0.2s; }
+        .chapter-card:active { transform: scale(0.98); }
+        .chapter-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .chapter-info { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .chapter-info h3 { margin: 0; font-size: 1.1em; color: var(--header-bg); font-weight: 700; }
+        .chapter-info span { font-size: 0.85em; color: var(--text-muted); font-weight: 500; background: #f0f2f5; padding: 2px 8px; border-radius: 12px; display: inline-block; }
+        .arrow-icon { color: #b2bec3; font-size: 1.2em; }
+
+        .video-list-header { padding: 15px 20px; display: flex; align-items: center; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .back-button { background: #f1f2f6; width: 35px; height: 35px; border-radius: 50%; border: none; font-size: 20px; cursor: pointer; margin-right: 15px; color: var(--text-color); display: flex; align-items: center; justify-content: center;}
+        .video-list-container { padding: 15px; }
+        .video-thumbnail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; animation: fadeIn 0.4s ease; }
+        .video-thumbnail { background-color: white; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default; }
+        .video-thumbnail:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+        .video-thumbnail img { width: 100%; height: 100px; object-fit: cover; display: block; cursor: pointer; }
+        .video-thumbnail p { padding: 12px; margin: 0; font-size: 0.9em; color: #2f3542; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; background: white; cursor: default; }
+        
+        .play-icon-thumb { position: absolute; top: 50px; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; background-color: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; pointer-events: auto; }
+        .play-icon-thumb:after { content: '▶'; color: var(--primary-color); font-size: 14px; margin-left: 2px;}
+        .watched-indicator { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
+        .watched-indicator svg { width: 14px; height: 14px; fill: #44bd32; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VIDEO PLAYER UPDATED --- */
+        .video-player-modal { 
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: #000; flex-direction: column; 
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; outline: none;
+        }
+        .video-player-modal.active { display: flex; }
+        
+        .protection-layer {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2; background: transparent;
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+        }
+
+        #fullscreen-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; background-color: black; }
+        #fullscreen-container:-webkit-full-screen, #fullscreen-container:fullscreen { width: 100%; height: 100%; background-color: black; }
+        #player-wrapper { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: black; position: relative; }
+        #player { width: 100%; height: 100%; position: relative; z-index: 1; }
+        
+        .double-tap-feedback { position: absolute; top: 0; bottom: 0; width: 50%; display: none; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.9); font-size: 14px; font-weight: bold; z-index: 15; flex-direction: column; background: transparent; text-shadow: 0 0 5px rgba(0,0,0,0.7); }
+        .double-tap-feedback.left { left: 0; border-top-right-radius: 50% 100%; border-bottom-right-radius: 50% 100%; }
+        .double-tap-feedback.right { right: 0; border-top-left-radius: 50% 100%; border-bottom-left-radius: 50% 100%; }
+        .double-tap-icon { font-size: 24px; margin-bottom: 5px; }
+        @keyframes fadeInOut { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+        
+        #closePlayer { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 24px; cursor: pointer; z-index: 2005; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(4px); }
+        
+        /* YouTube Button Style */
+        .youtube-btn-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 2005;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-size: 0.9em;
+            transition: transform 0.2s;
+        }
+        .youtube-btn-overlay:active { transform: scale(0.95); }
+        .youtube-btn-overlay svg { fill: white; width: 18px; height: 18px; }
+
+        /* --- UPDATED: Controls Container Background Transparent --- */
+        .controls-container { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; 
+            background: rgba(0,0,0,0); /* Changed from 0.3 to 0 (Transparent) */
+            display: flex; flex-direction: column; justify-content: space-between; opacity: 1; visibility: visible; transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; pointer-events: none; 
+        }
+        .controls-container.hidden { opacity: 0; visibility: hidden; }
+        .controls-container > * { pointer-events: auto; }
+
+        /* --- UPDATED: Gradients with reduced opacity for cleaner view --- */
+        .video-title-overlay { 
+            padding: 60px 20px 20px; 
+            color: white; font-size: 1.1em; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); /* Lighter shadow */
+        }
+
+        .bottom-controls-section {
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); /* Lighter shadow */
+            padding: 0 15px 15px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .time-fullscreen-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2px;
+        }
+
+        #time-display { font-size: 13px; color: #fff; font-family: Arial, sans-serif; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+        .progress-bar-container { width: 100%; display: flex; align-items: center; padding: 10px 0; cursor: pointer; position: relative; height: 20px; }
+        #progress-bar { width: 100%; height: 3px; background-color: rgba(255, 255, 255, 0.3); position: relative; transition: height 0.1s; }
+        .progress-bar-container:hover #progress-bar, .progress-bar-container.dragging #progress-bar { height: 5px; }
+        #progress-bar-filled { height: 100%; width: 0%; background: #ff0000; position: relative; }
+        #progress-thumb { width: 14px; height: 14px; background-color: #ff0000; border-radius: 50%; position: absolute; top: 50%; left: 0%; transform: translate(-50%, -50%); z-index: 20; box-shadow: 0 0 4px rgba(0,0,0,0.5); display: block; }
+
+        .controls-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .left-controls { display: flex; align-items: center; gap: 15px; }
+        .play-controls-group { display: flex; align-items: center; gap: 30px; justify-content: center; width: 100%; }
+
+        .control-button { background: none; border: none; color: white; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.9; }
+        .control-button:hover { opacity: 1; }
+        .control-button svg { width: 24px; height: 24px; fill: white; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+        
+        .play-pause-btn svg { width: 36px; height: 36px; }
+        .rewind-forward-btn svg { width: 28px; height: 28px; }
+
+        .controls-container.locked .bottom-controls-section, .controls-container.locked .video-title-overlay { display: none !important; }
+        .lock-overlay-btn { display: none; position: absolute; bottom: 50px; left: 20px; z-index: 50; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 50%; pointer-events: auto; }
+        .controls-container.locked .lock-overlay-btn { display: flex; }
+
+        .interaction-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .popup-menu { display: none; position: absolute; bottom: 50px; left: 0; background-color: rgba(28, 28, 28, 0.95); border-radius: 12px; padding: 8px 0; list-style: none; margin: 0; min-width: 100px; text-align: center; max-height: 200px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .popup-menu li { padding: 10px 20px; cursor: pointer; font-size: 14px; color: rgba(255,255,255,0.8); }
+        .popup-menu li.active { color: var(--video-red); font-weight: bold; }
+        
+        @media (orientation: landscape) { 
+            #videoPlayerModal.active #player-wrapper { width: 100%; height: 100%; max-width: 100vw; max-height: 100vh; aspect-ratio: unset; } 
+            
+            .controls-action-row {
+                justify-content: space-between;
+            }
+            .play-controls-group {
+                justify-content: flex-end;
+                padding-right: 20px; 
+                gap: 40px;
+                width: auto;
+                flex-grow: 1;
+            }
+        }
+        
+        .color-1 { background: linear-gradient(45deg, #e57373, #ff8a80); } 
+        .color-2 { background: linear-gradient(45deg, #ffb74d, #ffd180); } 
+        .color-3 { background: linear-gradient(45deg, #ba68c8, #ea80fc); } 
+        .color-4 { background: linear-gradient(45deg, #64b5f6, #80d8ff); } 
+        .color-5 { background: linear-gradient(45deg, #4db6ac, #a7ffeb); } 
+        .color-6 { background: linear-gradient(45deg, #7986cb, #8c9eff); } 
+        .color-7 { background: linear-gradient(45deg, #a1887f, #bcaaa4); } 
+        .color-8 { background: linear-gradient(45deg, #90a4ae, #b0bec5); }
+    </style>
+</head>
+<body>
+    <div id="authContainer" class="auth-container">
+        <form id="loginForm" class="auth-form active">
+            <h2>লগইন</h2>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <input type="email" id="loginEmail" name="loginEmail" placeholder="আপনার ইমেইল" required>
+            </div>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                <input type="password" id="loginPassword" name="loginPassword" placeholder="পাসওয়ার্ড" required>
+            </div>
+            <button type="submit">লগইন করুন</button>
+            <p class="toggle-form">অ্যাকাউন্ট নেই? <span onclick="window.toggleAuthForms()">রেজিস্টার করুন</span></p>
+        </form>
+
+        <form id="registerForm" class="auth-form">
+            <h2>রেজিস্টার</h2>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <input type="text" id="registerName" name="registerName" placeholder="আপনার নাম" required>
+            </div>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                <input type="tel" id="registerNumber" name="registerNumber" placeholder="ফোন নম্বর" required>
+            </div>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <input type="email" id="registerEmail" name="registerEmail" placeholder="ইমেইল" required>
+            </div>
+            <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                <input type="password" id="registerPassword" name="registerPassword" placeholder="পাসওয়ার্ড দিন" required>
+            </div>
+            <button type="submit">রেজিস্টার করুন</button>
+            <p class="toggle-form">ইতিমধ্যে অ্যাকাউন্ট আছে? <span onclick="window.toggleAuthForms()">লগইন করুন</span></p>
+        </form>
+    </div>
+
+    <div class="app-container" style="display: none;">
+        <div id="mainPage" class="page active">
+            <header class="main-header">
+                <button id="profileButton" class="header-icon-button">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+                </button>
+                <span class="header-title">ELECTRIX</span>
+                <button id="logoutButton" class="header-icon-button">
+                     <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg>
+                </button>
+            </header>
+
+            <nav class="course-nav">
+                <!-- UPDATED: Chat Button added here -->
+                <button class="chat-btn" onclick="openChat()">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                </button>
+                <div id="allCoursesTab" class="nav-tab active">সকল কোর্স</div>
+                <div id="myCoursesTab" class="nav-tab">আমার কোর্স</div>
+            </nav>
+
+            <div id="allCoursesGrid" class="course-grid active">
+                <p style="grid-column: 1/-1; text-align:center;">কোর্স লোড হচ্ছে...</p>
+            </div>
+            
+            <div id="myCoursesGrid" class="course-grid">
+                 <p style="grid-column: 1/-1; text-align:center;">আপনি এখনো কোনো কোর্সে এনরোল করেননি।</p>
+            </div>
+        </div>
+
+        <!-- NEW: Chat Modal -->
+        <div id="chatModal" class="chat-modal">
+            <div class="chat-header">
+                <h3>কমিউনিটি চ্যাট</h3>
+                <button class="chat-close-btn" onclick="closeChat()">×</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will be loaded here -->
+            </div>
+            <form id="chatForm" class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." required autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
+        <!-- NEW: Subject List Page (Courses -> Subjects) -->
+        <div id="subjectListPage" class="page">
+            <header class="video-list-header">
+                <button class="back-button" onclick="history.back()">←</button>
+                <h1 id="courseTitleHeader" style="font-size: 1.1em; color: var(--header-bg); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-weight: 700;"></h1>
+            </header>
+            <div id="subjectGrid" class="course-grid active" style="display:grid; padding-top: 5px;">
+                <!-- Subjects will be loaded here -->
+            </div>
+        </div>
+
+        <div id="profilePage" class="page">
+            <header class="profile-header">
+                <button class="back-button" onclick="history.back()">←</button>
+                <h1 style="font-size: 1.2em; color: var(--header-bg); font-weight: 700;">আমার প্রোফাইল</h1>
+            </header>
+            <div class="profile-form-container">
+                <div class="profile-card-modern">
+                    <div class="profile-avatar-circle">👤</div>
+                    <h3 style="margin:0; color:var(--header-bg);">স্বাগতম!</h3>
+                    <p style="margin:5px 0 0; color:var(--text-muted); font-size:0.9em;">আপনার প্রোফাইল তথ্য আপডেট রাখুন</p>
+                </div>
+                <form id="profileForm" class="profile-card-modern" style="text-align: left;">
+                    <div class="form-group"> <label for="profileNameInput">আপনার নাম</label> <input type="text" id="profileNameInput" name="profileName" required> </div>
+                    <div class="form-group"> <label for="profileNumberInput">ফোন নম্বর</label> <input type="tel" id="profileNumberInput" name="profileNumber" required> </div>
+                    <div class="form-group"> <label for="profileEmailInput">ইমেইল (পরিবর্তনযোগ্য নয়)</label> <input type="email" id="profileEmailInput" name="profileEmail" readonly> </div>
+                    <button type="submit" class="save-button">পরিবর্তন সেভ করুন</button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="chapterListPage" class="page">
+            <header class="video-list-header">
+                <button class="back-button" onclick="history.back()">←</button>
+                <h1 id="subjectTitleChapters" style="font-size: 1.1em; color: var(--header-bg); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-weight: 700;"></h1>
+            </header>
+            <div id="chapterListContainer" class="chapter-list-container"></div>
+        </div>
+
+        <div id="videoListPage" class="page">
+            <header class="video-list-header">
+                <button class="back-button" onclick="history.back()">←</button>
+                <h1 id="chapterTitle" style="font-size: 1.1em; color: var(--header-bg); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-weight: 700;"></h1>
+            </header>
+            <div id="videoListContainer" class="video-list-container"></div>
+        </div>
+    </div>
+    
+    <!-- Video Player -->
+    <div id="videoPlayerModal" class="video-player-modal" oncontextmenu="return false;">
+        <button id="openYoutubeBtn" class="youtube-btn-overlay" title="Watch on YouTube">
+            <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            YouTube
+        </button>
+
+        <button id="closePlayer" onclick="closePlayer()">
+            <svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+
+        <div id="fullscreen-container">
+            <div id="player-wrapper">
+                <div id="player"></div>
+                <!-- Invisible Protection Layer to block Lens/Copy -->
+                <div class="protection-layer"></div>
+
+                <!-- Double Tap Animation Layers (HTML Kept but Logic Disabled) -->
+                <div id="doubleTapLeft" class="double-tap-feedback left">
+                    <div class="double-tap-icon">«</div>
+                    <div id="doubleTapTextLeft">10 seconds</div>
+                </div>
+                <div id="doubleTapRight" class="double-tap-feedback right">
+                    <div class="double-tap-icon">»</div>
+                    <div id="doubleTapTextRight">10 seconds</div>
+                </div>
+                
+                <div class="interaction-overlay" id="interactionOverlay"></div>
+            </div>
+
+            <div class="controls-container">
+                <!-- 1. Top Title -->
+                <div class="video-title-overlay" id="videoPlayerTitle"></div>
+
+                <!-- 2. Bottom Section -->
+                <div class="bottom-controls-section">
+                    
+                    <!-- Row 1: Time Left, Fullscreen Right (Above Progress Bar) -->
+                    <div class="time-fullscreen-row">
+                        <div id="time-display">0:00 / 0:00</div>
+                        <button id="fullscreenButton" class="control-button" title="Fullscreen">
+                            <svg id="fullscreenOpen" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                            <svg id="fullscreenExit" style="display: none;" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Row 2: Progress Bar -->
+                    <div class="progress-bar-container" id="progressBarContainer">
+                        <div id="progress-bar">
+                            <div id="progress-bar-filled"></div>
+                            <div id="progress-thumb"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Row 3: Action Buttons (Speed/Lock Left, Play Controls Right/Center) -->
+                    <div class="controls-action-row">
+                        <!-- Left: Speed & Lock -->
+                        <div class="left-controls">
+                            <div class="control-button-wrapper" style="position: relative;">
+                                <button id="speedButton" class="control-button" title="Playback Speed">
+                                    <svg viewBox="0 0 24 24"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/></svg>
+                                </button>
+                                <ul id="speedMenu" class="popup-menu"></ul>
+                            </div>
+                            
+                            <button id="lockButton" class="control-button" title="Lock Screen">
+                                <svg id="lockOpenIcon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Right/Center: Play, Pause, Rewind, Forward -->
+                        <div class="play-controls-group">
+                            <button id="rewindButton" class="control-button rewind-forward-btn" title="Rewind 10s">
+                                <svg viewBox="0 0 24 24"><path d="M11.5 12l8.5 6V6l-8.5 6zm-1-6V6l-8.5 6 8.5 6v-6z"/></svg>
+                            </button>
+                            
+                            <button id="playPauseButton" class="control-button play-pause-btn" title="Play/Pause">
+                                <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            </button>
+                            
+                            <button id="forwardButton" class="control-button rewind-forward-btn" title="Forward 10s">
+                                <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Separate Unlock Button shown only when locked -->
+                <div class="lock-overlay-btn" id="unlockOverlayBtn">
+                    <button class="control-button" style="color: #ff6f00;">
+                        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyBm_PEHK-K1TtwILcpqHCK-78krtXqHoKs",
+          authDomain: "education-16fd0.firebaseapp.com",
+          databaseURL: "https://education-16fd0-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "education-16fd0",
+          storageBucket: "education-16fd0.firebasestorage.app",
+          messagingSenderId: "755047342486",
+          appId: "1:755047342486:web:08652fc1d7077d4d53bdb7",
+          measurementId: "G-FZN29KK8ED"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        console.log("✅ Firebase successfully initialized.");
+
+        // --- Element References ---
+        const authContainer = document.getElementById('authContainer');
+        const appContainer = document.querySelector('.app-container');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const logoutButton = document.getElementById('logoutButton');
+        const profileButton = document.getElementById('profileButton');
+        const mainPage = document.getElementById('mainPage');
+        const subjectListPage = document.getElementById('subjectListPage'); 
+        const chapterListPage = document.getElementById('chapterListPage'); 
+        const videoListPage = document.getElementById('videoListPage');
+        const profilePage = document.getElementById('profilePage');
+        const videoPlayerModal = document.getElementById('videoPlayerModal');
+        const videoPlayerTitle = document.getElementById('videoPlayerTitle');
+        
+        const allCoursesTab = document.getElementById('allCoursesTab');
+        const myCoursesTab = document.getElementById('myCoursesTab');
+        const allCoursesGrid = document.getElementById('allCoursesGrid');
+        const myCoursesGrid = document.getElementById('myCoursesGrid');
+        const subjectGrid = document.getElementById('subjectGrid');
+
+        // Chat Elements
+        const chatModal = document.getElementById('chatModal');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+
+        let allCoursesData = {}; 
+        let userEnrolledCourses = {};
+        let userWatchedVideos = {}; 
+        let currentCourseKey = null; 
+        let currentSubjectChapters = []; 
+        let currentPlayingVideoId = null; 
+        let currentUserData = {};
+
+        // --- Authentication Logic ---
+        window.toggleAuthForms = function() {
+            const loginF = document.getElementById('loginForm');
+            const registerF = document.getElementById('registerForm');
+            loginF.classList.toggle('active');
+            registerF.classList.toggle('active');
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("✅ User is logged in:", user.uid);
+                authContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+                
+                // Fetch user data for chat
+                database.ref('users/' + user.uid).once('value').then((snapshot) => {
+                    currentUserData = snapshot.val() || {};
+                });
+
+                loadInitialData(user.uid);
+                history.pushState({page: 'main'}, 'Main Page', window.location.href);
+            } else {
+                console.log("User is logged out.");
+                authContainer.style.display = 'flex';
+                appContainer.style.display = 'none';
+            }
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const number = document.getElementById('registerNumber').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    database.ref('users/' + user.uid).set({ name: name, number: number, email: email });
+                    alert('রেজিস্ট্রেশন সফল হয়েছে!');
+                })
+                .catch((error) => alert('রেজিস্ট্রেশন ব্যর্থ হয়েছে: ' + error.message));
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => alert('লগইন ব্যর্থ হয়েছে: ' + error.message));
+        });
+
+        logoutButton.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                if (videoPlayerModal.classList.contains('active')) closePlayer();
+                showMainPage();
+            });
+        });
+
+        // --- Chat Functionality ---
+        window.openChat = function() {
+            chatModal.classList.add('active');
+            scrollToBottom();
+        }
+
+        window.closeChat = function() {
+            chatModal.classList.remove('active');
+        }
+
+        // Listen for new messages
+        database.ref('messages').limitToLast(50).on('child_added', (snapshot) => {
+            const msg = snapshot.val();
+            const user = auth.currentUser;
+            const isMine = user && msg.uid === user.uid;
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message-bubble ${isMine ? 'mine' : 'others'}`;
+            msgDiv.innerHTML = `
+                <span class="message-sender">${msg.name || 'Unknown'}</span>
+                ${msg.text}
+            `;
+            chatMessages.appendChild(msgDiv);
+            scrollToBottom();
+        });
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            const user = auth.currentUser;
+            
+            if (text && user) {
+                database.ref('messages').push({
+                    uid: user.uid,
+                    name: currentUserData.name || 'User',
+                    text: text,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                chatInput.value = '';
+            }
+        });
+
+        // --- Course and Data Loading ---
+        function loadInitialData(userId) {
+            const coursesRef = database.ref('courses');
+            const enrolledRef = database.ref(`users/${userId}/enrolledCourses`);
+            const watchedRef = database.ref(`users/${userId}/watchedVideos`);
+
+            coursesRef.on('value', (snapshot) => {
+                allCoursesData = snapshot.val() || {};
+                renderAllCourses();
+                renderMyCourses(); 
+            }, (error) => console.error("❌ Firebase read failed: ", error));
+
+            enrolledRef.on('value', (snapshot) => {
+                userEnrolledCourses = snapshot.val() || {};
+                renderAllCourses(); 
+                renderMyCourses();
+            });
+
+            watchedRef.on('value', (snapshot) => {
+                userWatchedVideos = snapshot.val() || {};
+            });
+        }
+
+        function renderAllCourses() {
+            allCoursesGrid.innerHTML = '';
+            if (Object.keys(allCoursesData).length === 0) {
+                allCoursesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">কোনো কোর্স পাওয়া যায়নি।</p>';
+                return;
+            }
+            for (const key in allCoursesData) {
+                const course = allCoursesData[key];
+                const isEnrolled = userEnrolledCourses[key];
+                const isIconText = course.icon && course.icon.length > 3; 
+                
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.innerHTML = `
+                    <div class="course-banner ${course.colorClass || 'color-1'}" style="background-image: url('${course.bannerImage || ''}')">
+                        <div class="course-icon ${isIconText ? 'is-text' : ''}">${course.icon || '📚'}</div>
+                    </div>
+                    <div class="course-info">
+                        <h3>${course.title}</h3>
+                        <button class="course-action-btn ${isEnrolled ? 'enrolled' : ''}" data-key="${key}" data-type="main">
+                            ${isEnrolled ? 'কোর্স দেখুন' : 'এনরোল করুন'}
+                        </button>
+                    </div>
+                `;
+                allCoursesGrid.appendChild(card);
+            }
+        }
+
+        function renderMyCourses() {
+            myCoursesGrid.innerHTML = '';
+            const enrolledKeys = Object.keys(userEnrolledCourses);
+            if (enrolledKeys.length === 0) {
+                myCoursesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:gray;">আপনি এখনো কোনো কোর্সে এনরোল করেননি।</p>';
+                return;
+            }
+            enrolledKeys.forEach(key => {
+                const course = allCoursesData[key];
+                if (course) {
+                    const isIconText = course.icon && course.icon.length > 3; 
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    card.innerHTML = `
+                        <div class="course-banner ${course.colorClass || 'color-1'}" style="background-image: url('${course.bannerImage || ''}')">
+                            <div class="course-icon ${isIconText ? 'is-text' : ''}">${course.icon || '📚'}</div>
+                        </div>
+                        <div class="course-info">
+                            <h3>${course.title}</h3>
+                            <button class="course-action-btn enrolled" data-key="${key}" data-type="main">কোর্স দেখুন</button>
+                        </div>
+                    `;
+                    myCoursesGrid.appendChild(card);
+                }
+            });
+        }
+
+        // Updated Click Handler
+        appContainer.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.matches('.course-action-btn')) {
+                const key = target.dataset.key;
+                const type = target.dataset.type;
+
+                if (type === 'main') {
+                    if (target.classList.contains('enrolled')) {
+                        loadCourseAndShowSubjects(key, allCoursesData[key].title);
+                    } else {
+                        enrollInCourse(key);
+                    }
+                } else if (type === 'subject') {
+                    loadSubjectAndShowChapters(key, target.dataset.title);
+                }
+            }
+        });
+
+        function enrollInCourse(courseKey) {
+            const user = auth.currentUser;
+            if (user) {
+                const enrolledRef = database.ref(`users/${user.uid}/enrolledCourses/${courseKey}`);
+                enrolledRef.set(true)
+                    .then(() => alert('অভিনন্দন! কোর্সে এনরোলমেন্ট সফল হয়েছে।'))
+                    .catch(error => alert('কিছু একটা সমস্যা হয়েছে: ' + error.message));
+            }
+        }
+
+        allCoursesTab.addEventListener('click', () => {
+            allCoursesTab.classList.add('active');
+            myCoursesTab.classList.remove('active');
+            allCoursesGrid.classList.add('active');
+            myCoursesGrid.classList.remove('active');
+        });
+
+        myCoursesTab.addEventListener('click', () => {
+            myCoursesTab.classList.add('active');
+            allCoursesTab.classList.remove('active');
+            myCoursesGrid.classList.add('active');
+            allCoursesGrid.classList.remove('active');
+        });
+        
+        function showMainPage() {
+            videoListPage.classList.remove('active');
+            chapterListPage.classList.remove('active');
+            subjectListPage.classList.remove('active'); // Hide Subject List
+            profilePage.classList.remove('active');
+            mainPage.classList.add('active');
+        }
+
+        profileButton.addEventListener('click', showProfilePage);
+
+        function showProfilePage() {
+             const user = auth.currentUser;
+            if (user) {
+                database.ref('users/' + user.uid).once('value').then((snapshot) => {
+                    const userData = snapshot.val();
+                    if(userData){
+                       document.getElementById('profileNameInput').value = userData.name || '';
+                       document.getElementById('profileNumberInput').value = userData.number || '';
+                       document.getElementById('profileEmailInput').value = userData.email || '';
+                    }
+                });
+            }
+            history.pushState({page: 'profile'}, 'Profile Page');
+            mainPage.classList.remove('active');
+            videoListPage.classList.remove('active');
+            chapterListPage.classList.remove('active');
+            subjectListPage.classList.remove('active');
+            profilePage.classList.add('active');
+        }
+        
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if(user) {
+                database.ref('users/' + user.uid).update({
+                    name: document.getElementById('profileNameInput').value,
+                    number: document.getElementById('profileNumberInput').value
+                }).then(() => {
+                    alert('প্রোফাইল সফলভাবে আপডেট করা হয়েছে!');
+                    showMainPage();
+                }).catch((error) => alert('প্রোফাইল আপডেট করতে সমস্যা হয়েছে: ' + error.message));
+            }
+        });
+
+        function loadCourseAndShowSubjects(courseKey, title) {
+            currentCourseKey = courseKey;
+            document.getElementById('courseTitleHeader').innerText = title;
+            const container = document.getElementById('subjectGrid');
+            container.innerHTML = '<p style="grid-column:1/-1;text-align:center;">সাবজেক্ট লোড হচ্ছে...</p>';
+
+            const courseData = allCoursesData[courseKey];
+            container.innerHTML = '';
+            
+            if (courseData && courseData.subjects) {
+                for (const subKey in courseData.subjects) {
+                    const subject = courseData.subjects[subKey];
+                    const isIconText = subject.icon && subject.icon.length > 3;
+
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    card.innerHTML = `
+                        <div class="course-banner ${subject.colorClass || 'color-4'}" style="height: 100px; background-image: url('${subject.bannerImage || ''}')">
+                            <div class="course-icon ${isIconText ? 'is-text' : ''}" style="font-size: 2em;">${subject.icon || '📖'}</div>
+                        </div>
+                        <div class="course-info">
+                            <h3>${subject.title}</h3>
+                            <button class="course-action-btn enrolled" data-key="${subKey}" data-type="subject" data-title="${subject.title}">
+                                অধ্যায় দেখুন
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            } else {
+                container.innerHTML = '<p style="grid-column:1/-1;text-align:center;">এই কোর্সে কোনো বিষয় যুক্ত করা হয়নি।</p>';
+            }
+
+            history.pushState({page: 'subjectList', title: title, key: courseKey}, title);
+            mainPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            videoListPage.classList.remove('active');
+            chapterListPage.classList.remove('active');
+            subjectListPage.classList.add('active');
+        }
+
+        function loadSubjectAndShowChapters(subjectKey, title) {
+            document.getElementById('subjectTitleChapters').innerText = title;
+            
+            database.ref(`courses/${currentCourseKey}/subjects/${subjectKey}`).once('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('chapterListContainer');
+                container.innerHTML = '';
+                
+                if (data && data.chapters && data.chapters.length > 0) {
+                    currentSubjectChapters = data.chapters; 
+                    
+                    data.chapters.forEach((chapter, index) => {
+                        const videoCount = chapter.videos ? chapter.videos.length : 0;
+                        const chapterCard = document.createElement('div');
+                        chapterCard.className = 'chapter-card';
+                        chapterCard.innerHTML = `
+                            <div class="chapter-info">
+                                <h3>${chapter.title}</h3>
+                                <span>${videoCount} টি ভিডিও</span>
+                            </div>
+                            <div class="arrow-icon">›</div>
+                        `;
+                        chapterCard.onclick = () => openChapterVideos(index, chapter.title);
+                        container.appendChild(chapterCard);
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center;">এই বিষয়ের জন্য কোনো অধ্যায় পাওয়া যায়নি।</p>';
+                }
+            });
+
+            history.pushState({page: 'chapterList', title: title, key: subjectKey}, title);
+            subjectListPage.classList.remove('active'); 
+            mainPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            videoListPage.classList.remove('active');
+            chapterListPage.classList.add('active');
+        }
+
+        function openChapterVideos(chapterIndex, chapterTitle) {
+            const container = document.getElementById('videoListContainer');
+            document.getElementById('chapterTitle').innerText = chapterTitle;
+            container.innerHTML = '';
+
+            const chapter = currentSubjectChapters[chapterIndex];
+
+            if (chapter && chapter.videos && chapter.videos.length > 0) {
+                const grid = document.createElement('div');
+                grid.className = 'video-thumbnail-grid';
+                
+                chapter.videos.forEach(video => {
+                    const isWatched = userWatchedVideos[video.id] === true;
+                    
+                    const thumb = document.createElement('div');
+                    thumb.className = 'video-thumbnail';
+                    thumb.innerHTML = `
+                        <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                        ${isWatched ? `<div class="watched-indicator"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>` : ''}
+                        <p>${video.title}</p>
+                        <div class="play-icon-thumb"></div>
+                    `;
+                    
+                    const playHandler = () => playVideo(video.id, video.title);
+                    thumb.querySelector('img').onclick = playHandler;
+                    thumb.querySelector('.play-icon-thumb').onclick = playHandler;
+                    
+                    grid.appendChild(thumb);
+                });
+                container.appendChild(grid);
+            } else {
+                container.innerHTML = '<p style="text-align:center;">এই অধ্যায়ে কোনো ভিডিও নেই।</p>';
+            }
+
+            history.pushState({page: 'videoList', title: chapterTitle, chapterIndex: chapterIndex}, chapterTitle);
+            chapterListPage.classList.remove('active');
+            videoListPage.classList.add('active');
+        }
+
+        // --- Custom YouTube Player Logic ---
+        var player; 
+        var animationFrameId; 
+        var lastVideoIdForMenuUpdate = null;
+        let controlsHideTimer = null;
+        let isInteractingWithControls = false;
+        let saveProgressTimer = 0; 
+        let isLocked = false;
+        
+        const playPauseButton = document.getElementById('playPauseButton');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBarThumb = document.getElementById('progress-thumb');
+        const progressBarFilled = document.getElementById('progress-bar-filled');
+        const timeDisplay = document.getElementById('time-display');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const controlsContainer = document.querySelector('.controls-container');
+        const lockButton = document.getElementById('lockButton');
+        const unlockOverlayBtn = document.getElementById('unlockOverlayBtn');
+
+        document.getElementById('openYoutubeBtn').addEventListener('click', () => {
+            if(currentPlayingVideoId) {
+                window.open(`https://www.youtube.com/watch?v=${currentPlayingVideoId}`, '_blank');
+            }
+        });
+
+        function togglePlayPauseIcon(isPlaying) {
+            if (isPlaying) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            } else {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        }
+
+        function onPlayerStateChange(event) { 
+            if (event.data == YT.PlayerState.PLAYING) { 
+                togglePlayPauseIcon(true);
+                startSmoothProgress(); 
+                if (player.getVideoData()['video_id'] !== lastVideoIdForMenuUpdate) { 
+                    updateSpeedMenu(); 
+                    lastVideoIdForMenuUpdate = player.getVideoData()['video_id']; 
+                } 
+                startControlsTimer(); 
+            } else { 
+                togglePlayPauseIcon(false);
+                cancelAnimationFrame(animationFrameId); 
+                showControls(); 
+                clearTimeout(controlsHideTimer); 
+                saveVideoProgress(); 
+            } 
+        }
+        
+        function onPlayerReady(event) { 
+            event.target.playVideo(); 
+            updateProgressBar(); 
+            updateSpeedMenu(); 
+        }
+        
+        function playVideo(videoId, title) { 
+            currentPlayingVideoId = videoId;
+            videoPlayerModal.classList.add('active'); 
+            videoPlayerTitle.innerText = title || "Video Player"; 
+            history.pushState({page: 'player', videoId: videoId}, 'Video Player'); 
+            
+            isLocked = false;
+            updateLockUI();
+            controlsContainer.classList.remove('locked');
+
+            const user = auth.currentUser;
+            let startTime = 0;
+            
+            const initPlayer = (startSeconds) => {
+                if (player) { 
+                    player.loadVideoById({videoId: videoId, startSeconds: startSeconds});
+                } else { 
+                    player = new YT.Player('player', { 
+                        height: '100%', 
+                        width: '100%', 
+                        videoId: videoId, 
+                        playerVars: { 
+                            'playsinline': 1, 
+                            'autoplay': 1, 
+                            'controls': 0, 
+                            'rel': 0, 
+                            'showinfo': 0, 
+                            'modestbranding': 1, 
+                            'disablekb': 1,
+                            'start': startSeconds 
+                        }, 
+                        events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } 
+                    }); 
+                }
+            };
+
+            if(user) {
+                database.ref(`users/${user.uid}/videoProgress/${videoId}`).once('value').then((snapshot) => {
+                    const savedTime = snapshot.val();
+                    if(savedTime) {
+                        startTime = Math.floor(savedTime);
+                    }
+                    initPlayer(startTime);
+                });
+            } else {
+                initPlayer(0);
+            }
+        }
+        
+        function closePlayer() { 
+            saveVideoProgress(); 
+            if (player && typeof player.stopVideo === 'function') { player.stopVideo(); } 
+            videoPlayerModal.classList.remove('active'); 
+            cancelAnimationFrame(animationFrameId);
+            clearTimeout(controlsHideTimer); 
+            if (document.fullscreenElement || document.webkitFullscreenElement) document.exitFullscreen(); 
+            currentPlayingVideoId = null;
+        }
+
+        function saveVideoProgress() {
+            if(player && currentPlayingVideoId && auth.currentUser) {
+                const currentTime = player.getCurrentTime();
+                const duration = player.getDuration();
+                if(currentTime > 5 && duration > 0 && (currentTime / duration) < 0.95) {
+                     database.ref(`users/${auth.currentUser.uid}/videoProgress/${currentPlayingVideoId}`).set(Math.floor(currentTime));
+                } else if ((currentTime / duration) >= 0.95) {
+                    database.ref(`users/${auth.currentUser.uid}/videoProgress/${currentPlayingVideoId}`).remove();
+                }
+            }
+        }
+
+        let isDraggingThumb = false; 
+
+        function startSmoothProgress() {
+            function loop() {
+                if (!isDraggingThumb) {
+                    updateProgressBar();
+                }
+                if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                    animationFrameId = requestAnimationFrame(loop);
+                }
+            }
+            loop();
+        }
+
+        function formatTime(seconds) { 
+            if (isNaN(seconds)) return "0:00";
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const sDisplay = s < 10 ? '0' + s : s;
+            const mDisplay = (m < 10 && h > 0) ? '0' + m : m;
+            if (h > 0) return `${h}:${mDisplay}:${sDisplay}`;
+            return `${m}:${sDisplay}`;
+        }
+
+        function updateProgressBar() { 
+            if (player && typeof player.getCurrentTime === 'function') { 
+                const currentTime = player.getCurrentTime(); 
+                const duration = player.getDuration(); 
+                if (duration > 0) { 
+                    const progressPercent = (currentTime / duration) * 100; 
+                    progressBarFilled.style.width = `${progressPercent}%`; 
+                    progressBarThumb.style.left = `${progressPercent}%`; 
+                    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`; 
+                    
+                    if (progressPercent > 90) {
+                        const vId = player.getVideoData()['video_id'];
+                        const user = auth.currentUser;
+                        if (user && !userWatchedVideos[vId]) {
+                             database.ref(`users/${user.uid}/watchedVideos/${vId}`).set(true);
+                        }
+                    }
+                    if(Math.floor(currentTime) % 5 === 0 && Math.floor(currentTime) !== saveProgressTimer) {
+                        saveVideoProgress();
+                        saveProgressTimer = Math.floor(currentTime);
+                    }
+                } 
+            } 
+        }
+        
+        const startDrag = (e) => { 
+            if (isLocked) return;
+            e.preventDefault(); 
+            isDraggingThumb = true; 
+            progressBarContainer.classList.add('dragging');
+            progressBarFilled.style.transition = 'none';
+            progressBarThumb.style.transition = 'none';
+        };
+        
+        const onDrag = (e) => { 
+            if (!isDraggingThumb) return; 
+            let clientX;
+            if (e.type === 'touchmove') { clientX = e.touches[0].clientX; } else { clientX = e.clientX; }
+
+            const barRect = document.getElementById('progress-bar').getBoundingClientRect(); 
+            let newPosition = clientX - barRect.left;
+            newPosition = Math.max(0, Math.min(newPosition, barRect.width));
+            const progressPercent = (newPosition / barRect.width) * 100; 
+            
+            progressBarFilled.style.width = `${progressPercent}%`; 
+            progressBarThumb.style.left = `${progressPercent}%`; 
+            
+            if (player && typeof player.getDuration === 'function') { 
+                const duration = player.getDuration(); 
+                const calculatedTime = (progressPercent / 100) * duration;
+                timeDisplay.textContent = `${formatTime(calculatedTime)} / ${formatTime(duration)}`; 
+            } 
+        };
+        
+        const stopDrag = (e) => { 
+            if (!isDraggingThumb) return; 
+            isDraggingThumb = false; 
+            progressBarContainer.classList.remove('dragging');
+
+            if (player && typeof player.getDuration === 'function') { 
+                const barRect = document.getElementById('progress-bar').getBoundingClientRect();
+                const currentPercent = parseFloat(progressBarThumb.style.left);
+                const newTime = (currentPercent / 100) * player.getDuration(); 
+                player.seekTo(newTime, true);
+            } 
+        };
+
+        progressBarContainer.addEventListener('click', (e) => { 
+            if (isLocked) return;
+            if (e.target === progressBarThumb) return; 
+            if (player && typeof player.getDuration === 'function') { 
+                const rect = document.getElementById('progress-bar').getBoundingClientRect();
+                const pos = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                const seekTime = (pos / rect.width) * player.getDuration();
+                player.seekTo(seekTime, true); 
+                const pct = (pos / rect.width) * 100;
+                progressBarFilled.style.width = pct + '%';
+                progressBarThumb.style.left = pct + '%';
+            } 
+        });
+
+        progressBarContainer.addEventListener('mousedown', startDrag); 
+        window.addEventListener('mousemove', onDrag); 
+        window.addEventListener('mouseup', stopDrag); 
+        progressBarContainer.addEventListener('touchstart', startDrag, { passive: false }); 
+        window.addEventListener('touchmove', onDrag, { passive: false }); 
+        window.addEventListener('touchend', stopDrag);
+
+        document.getElementById('interactionOverlay').addEventListener('click', (e) => {
+            if (isLocked) {
+                showControls();
+                startControlsTimer();
+                return;
+            }
+            if (controlsContainer.classList.contains('hidden')) {
+                showControls();
+                startControlsTimer();
+            } else {
+                hideControls();
+                clearTimeout(controlsHideTimer);
+            }
+        });
+
+        playPauseButton.addEventListener('click', () => { 
+            if (player) { 
+                player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo(); 
+            } 
+        });
+        
+        document.getElementById('rewindButton').addEventListener('click', () => { if (player) { const newTime = Math.max(0, player.getCurrentTime() - 10); player.seekTo(newTime, true); updateProgressBar(); } });
+        document.getElementById('forwardButton').addEventListener('click', () => { if (player) { const newTime = Math.min(player.getDuration(), player.getCurrentTime() + 10); player.seekTo(newTime, true); updateProgressBar(); } });
+        
+        lockButton.addEventListener('click', () => {
+            isLocked = true;
+            updateLockUI();
+            controlsContainer.classList.add('locked');
+            document.getElementById('openYoutubeBtn').style.display = 'none';
+        });
+
+        unlockOverlayBtn.addEventListener('click', () => {
+            isLocked = false;
+            updateLockUI();
+            controlsContainer.classList.remove('locked');
+             document.getElementById('openYoutubeBtn').style.display = 'flex';
+        });
+
+        function updateLockUI() {
+        }
+
+        function updateSpeedMenu() { 
+            if (!player || typeof player.getAvailablePlaybackRates !== 'function') return; 
+            const menu = document.getElementById('speedMenu'); 
+            menu.innerHTML = ''; 
+            player.getAvailablePlaybackRates().forEach(rate => { 
+                const item = document.createElement('li'); 
+                item.textContent = rate + 'x'; 
+                if (rate === player.getPlaybackRate()) item.classList.add('active'); 
+                item.onclick = () => { 
+                    player.setPlaybackRate(rate); 
+                    menu.querySelectorAll('li').forEach(li => li.classList.remove('active')); 
+                    item.classList.add('active'); 
+                    menu.style.display = 'none'; 
+                }; 
+                menu.appendChild(item); 
+            }); 
+        }
+        
+        document.getElementById('speedButton').addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            const menu = document.getElementById('speedMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; 
+        });
+        
+        function hideControls() { controlsContainer.classList.add('hidden'); } 
+        function showControls() { controlsContainer.classList.remove('hidden'); } 
+        
+        function startControlsTimer() { 
+            clearTimeout(controlsHideTimer); 
+            if(!isInteractingWithControls && !isDraggingThumb) {
+                controlsHideTimer = setTimeout(() => {
+                    if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                        hideControls();
+                    }
+                }, 5000); 
+            }
+        } 
+        
+        controlsContainer.addEventListener('mouseenter', () => { isInteractingWithControls = true; clearTimeout(controlsHideTimer); });
+        controlsContainer.addEventListener('mouseleave', () => { isInteractingWithControls = false; startControlsTimer(); });
+        controlsContainer.addEventListener('touchstart', () => { isInteractingWithControls = true; clearTimeout(controlsHideTimer); });
+        controlsContainer.addEventListener('touchend', () => { isInteractingWithControls = false; startControlsTimer(); });
+        
+        function resetAndShowControls() { 
+            showControls(); 
+            if (player && player.getPlayerState() === YT.PlayerState.PLAYING) startControlsTimer(); 
+        }
+        
+        document.getElementById('fullscreenButton').addEventListener('click', async () => { 
+            const elem = document.getElementById('fullscreen-container');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                try {
+                    if (elem.requestFullscreen) { await elem.requestFullscreen(); } 
+                    else if (elem.webkitRequestFullscreen) { await elem.webkitRequestFullscreen(); }
+                    if (screen.orientation && screen.orientation.lock) { try { await screen.orientation.lock('landscape'); } catch (err) {} }
+                } catch (err) {}
+            } else {
+                if (document.exitFullscreen) { await document.exitFullscreen(); } 
+                else if (document.webkitExitFullscreen) { await document.webkitExitFullscreen(); }
+                if (screen.orientation && screen.orientation.unlock) { screen.orientation.unlock(); }
+            }
+        });
+        
+        function handleFullscreenChange() { 
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement); 
+            document.getElementById('fullscreenOpen').style.display = isFullscreen ? 'none' : 'block';
+            document.getElementById('fullscreenExit').style.display = isFullscreen ? 'block' : 'none';
+            if (isFullscreen) { resetAndShowControls(); } else { clearTimeout(controlsHideTimer); showControls(); } 
+        }
+        document.addEventListener('fullscreenchange', handleFullscreenChange); document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        
+        window.addEventListener('click', () => { document.querySelectorAll('.popup-menu').forEach(m => m.style.display = 'none'); });
+        
+        window.addEventListener('popstate', function(event) { 
+            if (videoPlayerModal.classList.contains('active')) { 
+                closePlayer(); 
+            } else if (videoListPage.classList.contains('active')) {
+                videoListPage.classList.remove('active');
+                chapterListPage.classList.add('active');
+            } else if (chapterListPage.classList.contains('active')) {
+                 chapterListPage.classList.remove('active');
+                 subjectListPage.classList.add('active'); 
+            } else if (subjectListPage.classList.contains('active')) {
+                 subjectListPage.classList.remove('active');
+                 showMainPage(); 
+            } else if (profilePage.classList.contains('active')) { 
+                showMainPage(); 
+            } 
+        });
+
+    </script>
+
+</body>
+</html>
