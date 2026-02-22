@@ -78,7 +78,7 @@
         .chat-btn:active { transform: scale(0.95); }
         .chat-btn svg { width: 22px; height: 22px; fill: white; }
 
-        /* Chat Modal Styles Updated for Pagination */
+        /* Chat Modal Styles */
         .chat-modal { display: none; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 80vh; background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); z-index: 2000; flex-direction: column; animation: slideUp 0.3s ease; }
         .chat-modal.active { display: flex; }
         .chat-header { background: #0984e3; color: white; padding: 15px; border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -101,7 +101,7 @@
 
         .course-grid { display: none; padding: 20px; gap: 15px; grid-template-columns: repeat(2, 1fr); animation: fadeIn 0.5s ease; }
         .course-grid.active { display: grid; }
-        .course-card { background-color: var(--card-background); border-radius: var(--border-radius); box-shadow: var(--shadow-light); overflow: hidden; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; }
+        .course-card { background-color: var(--card-background); border-radius: var(--border-radius); box-shadow: var(--shadow-light); overflow: hidden; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; position: relative; }
         .course-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
         .course-banner { height: 120px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; }
         .course-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.25); }
@@ -111,6 +111,38 @@
         .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-color); line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .course-action-btn { padding: 10px; width: 100%; border: none; border-radius: 10px; background-color: var(--header-bg); color: white; font-weight: 600; cursor: pointer; font-size: 0.85em; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.2s; }
         .course-action-btn.enrolled { background-color: #44bd32; }
+
+        /* --- NEW BADGE STYLES --- */
+        .notification-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--video-red);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .video-new-dot {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--video-red);
+            border-radius: 50%;
+            border: 2px solid white;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
         .page { display: none; } .page.active { display: block; }
         .profile-header { padding: 15px 20px; display: flex; align-items: center; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -127,13 +159,14 @@
         #profilePage .save-button:active { transform: scale(0.98); }
 
         .chapter-list-container { padding: 20px; }
-        .chapter-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--primary-color); transition: transform 0.2s, box-shadow 0.2s; }
+        .chapter-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid var(--primary-color); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
         .chapter-card:active { transform: scale(0.98); }
         .chapter-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
         .chapter-info { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .chapter-info h3 { margin: 0; font-size: 1.1em; color: var(--header-bg); font-weight: 700; }
         .chapter-info span { font-size: 0.85em; color: var(--text-muted); font-weight: 500; background: #f0f2f5; padding: 2px 8px; border-radius: 12px; display: inline-block; }
         .arrow-icon { color: #b2bec3; font-size: 1.2em; }
+        .chapter-card .notification-badge { top: -8px; right: -8px; width: 22px; height: 22px; font-size: 0.7em; }
 
         .video-list-header { padding: 15px 20px; display: flex; align-items: center; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
         .back-button { background: #f1f2f6; width: 35px; height: 35px; border-radius: 50%; border: none; font-size: 20px; cursor: pointer; margin-right: 15px; color: var(--text-color); display: flex; align-items: center; justify-content: center;}
@@ -348,7 +381,7 @@
             </div>
         </div>
 
-        <!-- Chat Modal (Updated) -->
+        <!-- Chat Modal -->
         <div id="chatModal" class="chat-modal">
             <div class="chat-header">
                 <h3>কমিউনিটি চ্যাট</h3>
@@ -630,7 +663,6 @@
 
         window.closeChat = function() {
             chatModal.classList.remove('active');
-            // Detach new message listener when closing
             if(newMessageListener) {
                 database.ref('messages').off('child_added', newMessageListener);
                 newMessageListener = null;
@@ -652,8 +684,6 @@
         }
 
         function loadInitialMessages() {
-            // Clear current messages but keep the loader
-            // Select all bubbles and remove
             const bubbles = chatMessages.querySelectorAll('.message-bubble');
             bubbles.forEach(b => b.remove());
             
@@ -663,7 +693,6 @@
             chatOldestKey = null;
             chatNewestKey = null;
 
-            // Load last 10 messages
             database.ref('messages').orderByKey().limitToLast(10).once('value', snapshot => {
                 const messages = [];
                 snapshot.forEach(childSnapshot => {
@@ -680,11 +709,8 @@
                     });
                     
                     scrollToBottom();
-                    
-                    // Start listening for NEW messages that come AFTER the ones we just loaded
                     startNewMessageListener();
                 } else {
-                    // No messages at all
                     startNewMessageListener(); 
                 }
                 isChatLoading = false;
@@ -692,7 +718,7 @@
         }
 
         function startNewMessageListener() {
-            if (newMessageListener) return; // Already listening
+            if (newMessageListener) return;
 
             let query = database.ref('messages').orderByKey();
             if (chatNewestKey) {
@@ -703,19 +729,15 @@
                 const msg = snapshot.val();
                 const key = snapshot.key;
                 
-                // Avoid duplicates if any
                 if (document.querySelector(`.message-bubble[data-key="${key}"]`)) return;
 
                 const el = createMessageElement(msg, key);
                 chatMessages.appendChild(el);
                 scrollToBottom();
-                
-                // Update newest key
                 chatNewestKey = key;
             });
         }
 
-        // Scroll Event for Pagination
         chatMessages.addEventListener('scroll', function() {
             if (chatMessages.scrollTop === 0 && !isChatLoading && !isAllMessagesLoaded && chatOldestKey) {
                 loadOlderMessages();
@@ -726,17 +748,14 @@
             isChatLoading = true;
             chatLoader.classList.add('active');
             
-            // Capture current scroll height before adding content
             const previousScrollHeight = chatMessages.scrollHeight;
 
-            // Fetch 11 messages ending at current oldest (inclusive, so we get the oldest duplicate + 10 older)
             database.ref('messages').orderByKey().endAt(chatOldestKey).limitToLast(11).once('value', snapshot => {
                 const messages = [];
                 snapshot.forEach(childSnapshot => {
                     messages.push({ key: childSnapshot.key, val: childSnapshot.val() });
                 });
 
-                // The last message in this list is our current 'chatOldestKey', remove it
                 if (messages.length > 0 && messages[messages.length - 1].key === chatOldestKey) {
                     messages.pop();
                 }
@@ -748,21 +767,15 @@
                     return;
                 }
 
-                // Update oldest key
                 chatOldestKey = messages[0].key;
 
-                // Prepend messages (reverse order of array because forEach gives ascending)
-                // We want to insert them after the loader
                 for (let i = messages.length - 1; i >= 0; i--) {
                     const item = messages[i];
                     const el = createMessageElement(item.val, item.key);
-                    // Insert after loader
                     chatMessages.insertBefore(el, chatLoader.nextSibling); 
                 }
 
-                // Restore scroll position relative to content
                 chatMessages.scrollTop = chatMessages.scrollHeight - previousScrollHeight;
-                
                 chatLoader.classList.remove('active');
                 isChatLoading = false;
             });
@@ -788,14 +801,44 @@
             }
         });
 
-        // --- LAZY LOADING LOGIC ---
+        // --- BADGE LOGIC & LAZY LOADING ---
         
+        // Helper function to calculate unwatched new videos recursively
+        function countNewVideos(entity, type) {
+            let count = 0;
+            if (type === 'video') {
+                if (entity.isNew && !userWatchedVideos[entity.id]) {
+                    return 1;
+                }
+                return 0;
+            } else if (type === 'chapter') {
+                if (entity.videos) {
+                    const videos = entity.videos;
+                    for (let key in videos) {
+                        count += countNewVideos(videos[key], 'video');
+                    }
+                }
+            } else if (type === 'subject') {
+                if (entity.chapters) {
+                    for (let key in entity.chapters) {
+                        count += countNewVideos(entity.chapters[key], 'chapter');
+                    }
+                }
+            } else if (type === 'course') {
+                 if (entity.subjects) {
+                    for (let key in entity.subjects) {
+                        count += countNewVideos(entity.subjects[key], 'subject');
+                    }
+                }
+            }
+            return count;
+        }
+
         function loadInitialData(userId) {
             const coursesRef = database.ref('courses');
             const enrolledRef = database.ref(`users/${userId}/enrolledCourses`);
             const watchedRef = database.ref(`users/${userId}/watchedVideos`);
 
-            // Load Courses List
             coursesRef.on('value', (snapshot) => {
                 allCoursesList = snapshot.val() || {};
                 renderAllCourses();
@@ -810,6 +853,9 @@
 
             watchedRef.on('value', (snapshot) => {
                 userWatchedVideos = snapshot.val() || {};
+                // Re-render to update badges when a video is watched
+                renderAllCourses();
+                renderMyCourses();
             });
         }
 
@@ -819,16 +865,30 @@
                 allCoursesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">কোনো কোর্স পাওয়া যায়নি।</p>';
                 return;
             }
-            for (const key in allCoursesList) {
+            
+            // Sort by lastUpdated (Desc)
+            const sortedKeys = Object.keys(allCoursesList).sort((a, b) => {
+                return (allCoursesList[b].lastUpdated || 0) - (allCoursesList[a].lastUpdated || 0);
+            });
+
+            sortedKeys.forEach(key => {
                 const course = allCoursesList[key];
                 const isEnrolled = userEnrolledCourses[key];
                 const isIconText = course.icon && course.icon.length > 3; 
+                const newCount = countNewVideos(course, 'course');
                 
                 const card = document.createElement('div');
                 card.className = 'course-card';
+                
+                let badgeHtml = '';
+                if(newCount > 0) {
+                    badgeHtml = `<div class="notification-badge">${newCount}</div>`;
+                }
+
                 card.innerHTML = `
                     <div class="course-banner ${course.colorClass || 'color-1'}" style="background-image: url('${course.bannerImage || ''}')">
                         <div class="course-icon ${isIconText ? 'is-text' : ''}">${course.icon || '📚'}</div>
+                        ${badgeHtml}
                     </div>
                     <div class="course-info">
                         <h3>${course.title}</h3>
@@ -838,7 +898,7 @@
                     </div>
                 `;
                 allCoursesGrid.appendChild(card);
-            }
+            });
         }
 
         function renderMyCourses() {
@@ -848,15 +908,31 @@
                 myCoursesGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:gray;">আপনি এখনো কোনো কোর্সে এনরোল করেননি।</p>';
                 return;
             }
+
+            // Sort enrolled courses as well
+            enrolledKeys.sort((a, b) => {
+                const courseA = allCoursesList[a];
+                const courseB = allCoursesList[b];
+                return ((courseB && courseB.lastUpdated) || 0) - ((courseA && courseA.lastUpdated) || 0);
+            });
+
             enrolledKeys.forEach(key => {
                 const course = allCoursesList[key];
                 if (course) {
                     const isIconText = course.icon && course.icon.length > 3; 
+                    const newCount = countNewVideos(course, 'course');
                     const card = document.createElement('div');
                     card.className = 'course-card';
+                    
+                    let badgeHtml = '';
+                    if(newCount > 0) {
+                         badgeHtml = `<div class="notification-badge">${newCount}</div>`;
+                    }
+
                     card.innerHTML = `
                         <div class="course-banner ${course.colorClass || 'color-1'}" style="background-image: url('${course.bannerImage || ''}')">
                             <div class="course-icon ${isIconText ? 'is-text' : ''}">${course.icon || '📚'}</div>
+                             ${badgeHtml}
                         </div>
                         <div class="course-info">
                             <h3>${course.title}</h3>
@@ -868,7 +944,6 @@
             });
         }
 
-        // Updated Click Handler to trigger lazy loading
         appContainer.addEventListener('click', function(e) {
             const target = e.target;
             if (target.matches('.course-action-btn')) {
@@ -877,7 +952,6 @@
 
                 if (type === 'main') {
                     if (target.classList.contains('enrolled')) {
-                        // Pass title from cached list, but fetch subjects on demand
                         loadCourseAndShowSubjects(key, allCoursesList[key].title);
                     } else {
                         enrollInCourse(key);
@@ -918,6 +992,7 @@
             subjectListPage.classList.remove('active');
             profilePage.classList.remove('active');
             mainPage.classList.add('active');
+            renderAllCourses(); // Refresh badges
         }
 
         profileButton.addEventListener('click', showProfilePage);
@@ -956,14 +1031,13 @@
             }
         });
 
-        // --- STEP 1: Load Subjects on Click ---
+        // --- STEP 1: Load Subjects ---
         function loadCourseAndShowSubjects(courseKey, title) {
             currentCourseKey = courseKey;
             document.getElementById('courseTitleHeader').innerText = title;
             const container = document.getElementById('subjectGrid');
             container.innerHTML = '<div class="loading-spinner">সাবজেক্ট লোড হচ্ছে...</div>';
 
-            // Switch view first to show loading state
             history.pushState({page: 'subjectList', title: title, key: courseKey}, title);
             mainPage.classList.remove('active');
             profilePage.classList.remove('active');
@@ -971,21 +1045,33 @@
             chapterListPage.classList.remove('active');
             subjectListPage.classList.add('active');
 
-            // Fetch ONLY subjects for this course (Lazy Load)
             database.ref(`courses/${courseKey}/subjects`).once('value').then(snapshot => {
                 const subjects = snapshot.val();
                 container.innerHTML = '';
                 
                 if (subjects) {
-                    for (const subKey in subjects) {
+                    // Sort subjects by lastUpdated
+                    const sortedSubKeys = Object.keys(subjects).sort((a, b) => {
+                         return (subjects[b].lastUpdated || 0) - (subjects[a].lastUpdated || 0);
+                    });
+
+                    sortedSubKeys.forEach(subKey => {
                         const subject = subjects[subKey];
                         const isIconText = subject.icon && subject.icon.length > 3;
+                        const newCount = countNewVideos(subject, 'subject');
 
                         const card = document.createElement('div');
                         card.className = 'course-card';
+                        
+                        let badgeHtml = '';
+                        if(newCount > 0) {
+                            badgeHtml = `<div class="notification-badge">${newCount}</div>`;
+                        }
+
                         card.innerHTML = `
                             <div class="course-banner ${subject.colorClass || 'color-4'}" style="height: 100px; background-image: url('${subject.bannerImage || ''}')">
                                 <div class="course-icon ${isIconText ? 'is-text' : ''}" style="font-size: 2em;">${subject.icon || '📖'}</div>
+                                ${badgeHtml}
                             </div>
                             <div class="course-info">
                                 <h3>${subject.title}</h3>
@@ -995,7 +1081,7 @@
                             </div>
                         `;
                         container.appendChild(card);
-                    }
+                    });
                 } else {
                     container.innerHTML = '<p style="grid-column:1/-1;text-align:center;">এই কোর্সে কোনো বিষয় যুক্ত করা হয়নি।</p>';
                 }
@@ -1005,48 +1091,55 @@
             });
         }
 
-        // --- STEP 2: Load Chapters on Click ---
+        // --- STEP 2: Load Chapters ---
         function loadSubjectAndShowChapters(subjectKey, title) {
             currentSubjectKey = subjectKey;
             document.getElementById('subjectTitleChapters').innerText = title;
             const container = document.getElementById('chapterListContainer');
             container.innerHTML = '<div class="loading-spinner">অধ্যায় লোড হচ্ছে...</div>';
 
-            // Switch view
             history.pushState({page: 'chapterList', title: title, key: subjectKey}, title);
             subjectListPage.classList.remove('active'); 
             mainPage.classList.remove('active');
             chapterListPage.classList.add('active');
 
-            // Fetch ONLY chapters for this subject
             database.ref(`courses/${currentCourseKey}/subjects/${subjectKey}/chapters`).once('value').then(snapshot => {
                 const chapters = snapshot.val();
                 container.innerHTML = '';
                 
                 if (chapters && (Array.isArray(chapters) || typeof chapters === 'object')) {
-                    // Normalize to array for easier handling if it's an object with keys
                     currentChapters = [];
-                    // Handle both Array and Object structures from Firebase
                     const keys = Object.keys(chapters);
+                    
+                    // Sort chapters by lastUpdated (Descending)
+                    keys.sort((a, b) => {
+                         return (chapters[b].lastUpdated || 0) - (chapters[a].lastUpdated || 0);
+                    });
                     
                     keys.forEach((key) => {
                         const chapter = chapters[key];
-                        // Store full object with ID/Key for next step
                         chapter.id = key; 
                         currentChapters.push(chapter);
 
                         const videoCount = chapter.videos ? (Array.isArray(chapter.videos) ? chapter.videos.length : Object.keys(chapter.videos).length) : 0;
-                        
+                        const newCount = countNewVideos(chapter, 'chapter');
+
                         const chapterCard = document.createElement('div');
                         chapterCard.className = 'chapter-card';
+                        
+                        let badgeHtml = '';
+                        if(newCount > 0) {
+                            badgeHtml = `<div class="notification-badge">${newCount}</div>`;
+                        }
+
                         chapterCard.innerHTML = `
+                            ${badgeHtml}
                             <div class="chapter-info">
                                 <h3>${chapter.title}</h3>
                                 <span>${videoCount} টি ভিডিও</span>
                             </div>
                             <div class="arrow-icon">›</div>
                         `;
-                        // Pass the array index or key to the next function
                         chapterCard.onclick = () => openChapterVideos(key, chapter.title);
                         container.appendChild(chapterCard);
                     });
@@ -1058,18 +1151,16 @@
             });
         }
 
-        // --- STEP 3: Load Videos on Click ---
+        // --- STEP 3: Load Videos ---
         function openChapterVideos(chapterId, chapterTitle) {
             const container = document.getElementById('videoListContainer');
             document.getElementById('chapterTitle').innerText = chapterTitle;
             container.innerHTML = '<div class="loading-spinner">ভিডিও লোড হচ্ছে...</div>';
 
-            // Switch view
             history.pushState({page: 'videoList', title: chapterTitle, chapterId: chapterId}, chapterTitle);
             chapterListPage.classList.remove('active');
             videoListPage.classList.add('active');
 
-            // Fetch ONLY videos for this chapter
             database.ref(`courses/${currentCourseKey}/subjects/${currentSubjectKey}/chapters/${chapterId}/videos`).once('value').then(snapshot => {
                 const videos = snapshot.val();
                 container.innerHTML = '';
@@ -1078,17 +1169,19 @@
                     const grid = document.createElement('div');
                     grid.className = 'video-thumbnail-grid';
                     
-                    // Handle videos as array or object
+                    // Videos remain SERIAL (Not sorted by lastUpdated) as per requirement
                     const videoList = [];
                     for(let k in videos) videoList.push(videos[k]);
 
                     videoList.forEach(video => {
                         const isWatched = userWatchedVideos[video.id] === true;
-                        
+                        const isNew = video.isNew && !isWatched;
+
                         const thumb = document.createElement('div');
                         thumb.className = 'video-thumbnail';
                         thumb.innerHTML = `
                             <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                            ${isNew ? '<div class="video-new-dot"></div>' : ''}
                             ${isWatched ? `<div class="watched-indicator"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>` : ''}
                             <p>${video.title}</p>
                             <div class="play-icon-thumb"></div>
@@ -1280,6 +1373,7 @@
                         const user = auth.currentUser;
                         if (user && !userWatchedVideos[vId]) {
                              database.ref(`users/${user.uid}/watchedVideos/${vId}`).set(true);
+                             // The listener on 'watchedRef' will handle UI updates (badges/dots)
                         }
                     }
                     if(Math.floor(currentTime) % 5 === 0 && Math.floor(currentTime) !== saveProgressTimer) {
